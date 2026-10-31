@@ -74,6 +74,11 @@ SOURCES: list[tuple[str, str, str]] = [
      "https://ourworldindata.org/grapher/life-expectancy.csv"
      "?csvType=full&useColumnShortNames=true"),
 
+    ("births.csv",
+     "나라별 연간 출생아 수 1950~2100 (Our World in Data · UN WPP 2024, 2024년부터는 중위 추계)",
+     "https://ourworldindata.org/grapher/number-of-births-per-year.csv"
+     "?csvType=full&useColumnShortNames=true"),
+
     ("wb_fertility.json",
      "합계출산율 전세계 (World Bank SP.DYN.TFRT.IN)",
      "https://api.worldbank.org/v2/country/all/indicator/SP.DYN.TFRT.IN"

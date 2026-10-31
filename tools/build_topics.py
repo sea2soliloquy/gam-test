@@ -710,6 +710,76 @@ topic(
            "서울 관측소의 적설 기록과 다르고, 특히 하루 폭설은 작게 잡힐 수 "
            "있습니다.")
 
+# ── 12. 출생아 수 ────────────────────────────────────────────────
+# UN WPP 2024 를 OWID 가 정리한 값. 1950~2023 은 추정치, 2024 부터는 추계라
+# 문항은 추정치 열만 쓴다. 원본에는 OWID_* · UN_* · 코드 없는 묶음 줄이 섞여 있어
+# 순위는 World Bank 국가 목록(REAL)에 있는 곳만 센다.
+EST = "births__sex_all__age_all__variant_estimates"
+bt = [r for r in load_csv("births.csv") if r[EST]]
+B_YEAR = 2023
+kor_b = {int(r["year"]): float(r[EST]) for r in bt if r["code"] == "KOR"}
+kor_b23 = kor_b[B_YEAR]
+b_peak = max(kor_b, key=kor_b.get)
+b_peak_pct = kor_b23 / kor_b[b_peak] * 100
+b_world = next(float(r[EST]) for r in bt
+               if r["code"] == "OWID_WRL" and int(r["year"]) == B_YEAR)
+b_share = kor_b23 / b_world * 100
+b_cur = {r["entity"]: float(r[EST]) for r in bt
+         if int(r["year"]) == B_YEAR and r["code"] in REAL}
+b_rank = sorted(b_cur, key=b_cur.get, reverse=True).index("South Korea") + 1
+b_second = sorted(kor_b, key=kor_b.get, reverse=True)[1]
+# 정점과 2% 안쪽인 해들 — 이 구간 안에서는 추정치가 조금만 바뀌어도 정점이 옮겨 간다
+b_close = [y for y in kor_b if kor_b[y] >= kor_b[b_peak] * 0.98]
+b_top = max(b_cur, key=b_cur.get)
+
+topic(
+    "births", "🍼", "우리나라 출생아 수",
+    "1950년부터 2023년까지, 한 해에 태어난 아기 수",
+    "Our World in Data (UN 세계인구전망 2024)",
+    "https://ourworldindata.org/grapher/number-of-births-per-year",
+    [
+        slider("b1", f"{B_YEAR}년 한국에서 태어난 아기는 몇 만 명일까요? (UN 추정치)",
+               kor_b23 / 10000, "만 명", 0, 60, 1,
+               f"UN 세계인구전망 2024의 {B_YEAR}년 한국 출생아 추정치는 "
+               f"{kor_b23:,.0f}명",
+               f"가장 많았던 {b_peak}년에는 {kor_b[b_peak] / 10000:.0f}만 명이 "
+               "태어났습니다."),
+        choice("b2", "1950~2023년 중 한국 출생아 수가 가장 많았던 해는 몇 년대일까요?",
+               ["1950년대", "1960년대", "1970년대", "1980년대"],
+               f"{b_peak // 10 * 10}년대",
+               f"UN 세계인구전망 2024의 1950~2023년 한국 연간 출생아 추정치 "
+               f"가운데 최댓값은 {b_peak}년 {kor_b[b_peak]:,.0f}명",
+               f"두 번째로 많았던 해는 {b_second}년({kor_b[b_second]:,.0f}명)으로, "
+               f"차이는 {kor_b[b_peak] - kor_b[b_second]:,.0f}명입니다."),
+        slider("b3", f"{B_YEAR}년 한국 출생아 수는 1950~2023년 중 가장 많았던 해의 "
+               "몇 %일까요?",
+               b_peak_pct, "%", 0, 100, 1,
+               f"UN 세계인구전망 2024 추정치로 {B_YEAR}년 {kor_b23:,.0f}명을 "
+               f"가장 많았던 {b_peak}년 {kor_b[b_peak]:,.0f}명으로 나누면 "
+               f"{b_peak_pct:.1f}%",
+               f"{b_peak}년 한 해에 태어난 아기 수는 {B_YEAR}년의 "
+               f"{kor_b[b_peak] / kor_b23:.1f}배입니다."),
+        slider("b4", f"{B_YEAR}년 전 세계에서 태어난 아기 가운데 한국에서 태어난 "
+               "아기는 몇 %일까요?",
+               b_share, "%", 0, 1, 0.1,
+               f"UN 세계인구전망 2024 추정치로 {B_YEAR}년 한국 {kor_b23:,.0f}명을 "
+               f"세계 {b_world:,.0f}명으로 나누면 {b_share:.2f}%",
+               f"세계에서 태어난 아기 1,000명 가운데 약 {b_share * 10:.1f}명이 "
+               "한국에서 태어난 셈입니다."),
+        slider("b5", f"{B_YEAR}년 출생아 수가 많은 순으로 세면, 한국은 {len(b_cur)}개 "
+               "나라 중 몇 위일까요? (World Bank 국가 목록 기준)",
+               b_rank, "위", 1, 200, 1,
+               f"UN 세계인구전망 2024의 {B_YEAR}년 출생아 추정치를 World Bank "
+               f"국가 목록에 있는 {len(b_cur)}곳만 남겨 많은 순으로 세면 "
+               f"한국은 {b_rank}위 (1위 {b_top})",
+               f"1위 {b_top}의 출생아 수는 한국의 "
+               f"{b_cur[b_top] / kor_b23:.0f}배입니다."),
+    ],
+    caveat=f"UN 세계인구전망 2024의 추정치({B_YEAR}년까지)라 통계청이 출생신고로 "
+           "집계해 발표하는 출생아 수와 다를 수 있고 새 판이 나오면 과거 값도 "
+           f"바뀌는데, 특히 {min(b_close)}~{max(b_close)}년은 출생아 수가 2% 안쪽으로 "
+           "비슷해 정점인 해가 달라질 수 있습니다.")
+
 
 # ════════════════════════════════════════════════════════════════
 def main() -> None:

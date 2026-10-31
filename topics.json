@@ -127,6 +127,13 @@
       "title": "서울의 눈",
       "blurb": "1990년부터 2024년까지, 서울의 하루 강설량",
       "source": "Open-Meteo Archive (ERA5 재분석)"
+    },
+    {
+      "id": "births",
+      "emoji": "🍼",
+      "title": "우리나라 출생아 수",
+      "blurb": "1950년부터 2023년까지, 한 해에 태어난 아기 수",
+      "source": "Our World in Data (UN 세계인구전망 2024)"
     }
   ]
 }
