@@ -2,7 +2,7 @@
 
 출근길 숫자 — 공개 데이터로 계산한 숫자에 내 감이 얼마나 맞는지 맞혀 보는 추측 게임입니다.
 
-**주소:** https://github.com/sea2soliloquy/gam-test
+**주소:** https://gam-test-coral.vercel.app
 
 ## 내가 내린 판단
 
